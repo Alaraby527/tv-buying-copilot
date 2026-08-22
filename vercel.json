@@ -1,9 +1,11 @@
 {
   "builds": [
+    { "src": "api/test.py", "use": "@vercel/python@4.3.1" },
     { "src": "api/index.py", "use": "@vercel/python@4.3.1" },
     { "src": "public/**", "use": "@vercel/static" }
   ],
   "routes": [
+    { "src": "/test", "dest": "/api/test" },
     { "src": "/chat", "dest": "/api/index" },
     { "src": "/health", "dest": "/api/index" },
     { "handle": "filesystem" }
