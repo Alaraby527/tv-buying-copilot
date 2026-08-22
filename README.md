@@ -139,13 +139,19 @@ V1.1 剩余 2 个未满分 Case：国补和以旧换新的回答偏通用，未�
 
 ## 快速开始
 
+### 在线体验
+
+部署完成后补充链接。
+
+### 本地运行
+
 ```bash
 git clone https://github.com/Alaraby527/jingyan-ai-shopping-guide.git
 cd jingyan-ai-shopping-guide
 python app.py
 ```
 
-访问 http://localhost:8765
+默认访问 http://localhost:8765 。
 
 ### 配置 LLM（可选）
 
