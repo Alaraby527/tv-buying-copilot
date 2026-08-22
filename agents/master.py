@@ -1,6 +1,5 @@
 """Master Router：确定性意图分类，6 类路由。
 
-对应京言 AI 导购的 Question Classifier 节点。
 用关键词+规则做确定性分类，不依赖 LLM，避免分类幻觉。
 
 路由分类：
