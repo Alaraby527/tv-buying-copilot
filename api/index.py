@@ -9,17 +9,6 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 os.chdir(str(ROOT))
 
-from app import AgentOrchestrator
-
-# Initialize once, reuse across invocations
-_orchestrator = None
-
-def get_orchestrator():
-    global _orchestrator
-    if _orchestrator is None:
-        _orchestrator = AgentOrchestrator()
-    return _orchestrator
-
 
 class handler(BaseHTTPRequestHandler):
     def _send_json(self, data, status=200):
@@ -32,10 +21,14 @@ class handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         if self.path == "/health":
-            orch = get_orchestrator()
-            self._send_json({"status": "ok", "llm_available": orch.llm.available})
+            try:
+                from app import AgentOrchestrator
+                orch = AgentOrchestrator()
+                self._send_json({"status": "ok", "llm_available": orch.llm.available})
+            except Exception as e:
+                self._send_json({"status": "error", "message": str(e)})
         else:
-            self._send_json({"error": "not found"}, 404)
+            self._send_json({"error": "not found", "path": self.path}, 404)
 
     def do_POST(self):
         if self.path == "/chat":
@@ -51,11 +44,15 @@ class handler(BaseHTTPRequestHandler):
             if not message:
                 self._send_json({"error": "message is required"}, 400)
                 return
-            orch = get_orchestrator()
-            result = orch.handle(message, session_id)
-            self._send_json(result)
+            try:
+                from app import AgentOrchestrator
+                orch = AgentOrchestrator()
+                result = orch.handle(message, session_id)
+                self._send_json(result)
+            except Exception as e:
+                self._send_json({"error": str(e)}, 500)
         else:
-            self._send_json({"error": "not found"}, 404)
+            self._send_json({"error": "not found", "path": self.path}, 404)
 
     def do_OPTIONS(self):
         self.send_response(204)
