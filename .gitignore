@@ -5,3 +5,4 @@ memory/
 _files_to_push.json
 _collect_files.py
 .DS_Store
+.vercel
