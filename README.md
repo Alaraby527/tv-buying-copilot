@@ -1,6 +1,26 @@
 # 京言 AI 导购 Agent — Multi-Agent 电视选购系统
 
+![Python](https://img.shields.io/badge/Python-3.10+-blue)
+![License](https://img.shields.io/badge/License-MIT-green)
+![Multi-Agent](https://img.shields.io/badge/Architecture-Multi--Agent-purple)
+![Zero Dependencies](https://img.shields.io/badge/Dependencies-Zero-orange)
+
 > 从零自研 Python 代码的 Multi-Agent 电视导购系统，零第三方依赖，clone 即跑。
+
+![京言 AI 导购 Agent 演示界面](docs/demo-screenshot.png)
+
+## 目录
+
+- [业务背景](#业务背景)
+- [用户场景](#用户场景)
+- [人机方案](#人机方案)
+- [架构设计](#架构设计)
+- [评测与迭代](#评测与迭代)
+- [成本优化](#成本优化)
+- [技术栈](#技术栈)
+- [快速开始](#快速开始)
+- [项目结构](#项目结构)
+- [数据边界](#数据边界)
 
 ## 业务背景
 
@@ -27,24 +47,24 @@
 
 ## 架构设计
 
-```
-用户消息
-  │
-  ├─ NeedParser（需求解析：预算/尺寸/距离/用途/刷新率）
-  │
-  ├─ Master Router（确定性6类意图分类）
-  │   ├─ product → 商品参数 Agent（RAG检索 + 结构化筛选 + 加权打分）
-  │   ├─ promotion → 比价优惠 Agent（促销规则 + 叠加计算）
-  │   ├─ fulfillment → 履约服务 Agent（配送/安装/入户）
-  │   ├─ aftersales → 售后客服 Agent（强制转人工）
-  │   ├─ clarify → 需求澄清 Agent（多轮追问，每次一个问题）
-  │   └─ fallback → 兜底回复
-  │
-  ├─ Replanner（硬约束二次检查：预算/刷新率/库存/越权）
-  │
-  └─ Compliance（合规审核 Reflection，5条红线，修正循环最大2次）
-      │
-      └─ 最终回答 + 完整执行轨迹
+```mermaid
+flowchart TD
+    U[用户消息] --> NP[NeedParser<br/>需求解析：预算/尺寸/距离/用途/刷新率]
+    NP --> MR[Master Router<br/>确定性6类意图分类]
+    MR -->|product| PA[商品参数 Agent<br/>RAG检索 + 结构化筛选 + 加权打分]
+    MR -->|promotion| PR[比价优惠 Agent<br/>促销规则 + 叠加计算]
+    MR -->|fulfillment| FA[履约服务 Agent<br/>配送/安装/入户]
+    MR -->|aftersales| AA[售后客服 Agent<br/>强制转人工]
+    MR -->|clarify| CA[需求澄清 Agent<br/>多轮追问，每次一个问题]
+    MR -->|fallback| FB[兜底回复]
+    PA --> RP[Replanner<br/>硬约束二次检查：预算/刷新率/库存/越权]
+    PR --> RP
+    FA --> RP
+    AA --> OUT[最终回答 + 完整执行轨迹]
+    CA --> OUT
+    FB --> OUT
+    RP --> CP[Compliance<br/>合规审核 Reflection，5条红线，修正循环≤2次]
+    CP --> OUT
 ```
 
 ### 四层终止条件
