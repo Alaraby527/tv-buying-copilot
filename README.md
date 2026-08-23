@@ -4,6 +4,9 @@
 ![License](https://img.shields.io/badge/License-MIT-green)
 ![Multi-Agent](https://img.shields.io/badge/Architecture-Multi--Agent-purple)
 ![Zero Dependencies](https://img.shields.io/badge/Dependencies-Zero-orange)
+![Demo](https://img.shields.io/badge/Demo-Live-green)
+
+**👉 [在线体验静态演示](https://alaraby527.github.io/tv-buying-copilot/)**
 
 > 从零自研 Python 代码的 Multi-Agent 电视导购系统，零第三方依赖，clone 即跑。
 >
@@ -135,7 +138,13 @@ V1.1 剩余 2 个未满分 Case：国补和以旧换新的回答偏通用，未�
 
 ## 演示方式
 
-### 方式一：本地运行（推荐，零依赖）
+### 方式一：在线静态演示（推荐）
+
+**👉 [https://alaraby527.github.io/tv-buying-copilot/](https://alaraby527.github.io/tv-buying-copilot/)**
+
+预填充3轮示例对话（商品推荐→优惠查询→售后转人工）和完整的 Agent 执行轨迹，无需安装即可体验界面和架构。
+
+### 方式二：本地运行（完整功能，零依赖）
 
 ```bash
 git clone https://github.com/Alaraby527/tv-buying-copilot.git
@@ -145,14 +154,14 @@ python app.py
 
 默认访问 http://localhost:8765。无 API Key 时自动降级为确定性模板模式，架构和执行轨迹完整可用。
 
-### 方式二：查看架构文档和评测报告
+### 方式三：查看架构文档和评测报告
 
 - `AI_PRD.md` — AI 产品需求文档
 - `evaluation/eval-results-v1.0.md` — V1.0 评测结果
 - `evaluation/eval-results-v1.1.md` — V1.1 评测结果
 - `knowledge-base/` — 4 个知识库文档
 
-### 方式三：运行自动化评测
+### 方式四：运行自动化评测
 
 ```bash
 python eval.py
@@ -190,6 +199,8 @@ python app.py
 ├── app.py                  # 编排引擎 + HTTP服务
 ├── eval.py                 # 自动化评测脚本
 ├── AI_PRD.md               # AI产品需求文档
+├── docs/
+│   └── index.html          # 静态演示页（GitHub Pages）
 ├── core/                   # 核心模块（LLM/记忆/解析/RAG/约束）
 ├── agents/                 # 7个Agent模块
 ├── data/                   # 知识库 + 评测集
