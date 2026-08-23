@@ -1,4 +1,4 @@
-# 京言 AI 导购 Agent — Multi-Agent 电视选购系统
+# 智能电视选购 Copilot — 纯 Python 自研 Multi-Agent 导购系统
 
 ![Python](https://img.shields.io/badge/Python-3.10+-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
@@ -6,8 +6,10 @@
 ![Zero Dependencies](https://img.shields.io/badge/Dependencies-Zero-orange)
 
 > 从零自研 Python 代码的 Multi-Agent 电视导购系统，零第三方依赖，clone 即跑。
+>
+> Master Router + 5 Worker + Replanner + Compliance 四层架构，25 条评测驱动迭代，通过率 V1.0 72% → V1.1 92%，幻觉从 4 次降到 0 次。
 
-![京言 AI 导购 Agent 演示界面](docs/demo-screenshot.png)
+![智能电视选购 Copilot 演示界面](docs/demo-screenshot.png)
 
 ## 目录
 
@@ -17,6 +19,7 @@
 - [架构设计](#架构设计)
 - [评测与迭代](#评测与迭代)
 - [成本优化](#成本优化)
+- [演示方式](#演示方式)
 - [技术栈](#技术栈)
 - [快速开始](#快速开始)
 - [项目结构](#项目结构)
@@ -24,13 +27,13 @@
 
 ## 业务背景
 
-家电选购是高客单价、低频次、参数复杂的决策场景。用户在京东选购电视时，面对 Mini LED/OLED、分区数、峰值亮度、HDMI 2.1 等参数，往往需要在商品页、评测文章、客服之间反复切换。传统电商客服只能回答单轮问题，无法完成"需求理解→多品对比→优惠计算→履约确认"的连贯决策链。
+家电选购是高客单价、低频次、参数复杂的决策场景。用户在线上选购电视时，面对 Mini LED/OLED、分区数、峰值亮度、HDMI 2.1 等参数，往往需要在商品页、评测文章、客服之间反复切换。传统电商客服只能回答单轮问题，无法完成"需求理解→多品对比→优惠计算→履约确认"的连贯决策链。
 
 本项目验证的核心问题：**Multi-Agent 架构能否把分散的商品、促销、履约、售后知识串成一条可追溯的导购链路，同时在参数引用上做到不幻觉、不编造？**
 
 ## 用户场景
 
-- **目标用户**：正在京东选购电视的消费者，预算 3000-8000 元，对参数有疑问但不想自己做功课
+- **目标用户**：正在线上选购电视的消费者，预算 3000-8000 元，对参数有疑问但不想自己做功课
 - **核心场景**：用户用自然语言描述需求（预算、观看距离、用途），系统完成需求解析→多 Agent 协作→带引用来源的可解释推荐
 - **边界**：不做实时价格查询、不做下单支付，价格和参数均标注"以商品详情页为准"
 
@@ -40,7 +43,7 @@
 |------|---------|--------|
 | 需求理解 | 解析预算/尺寸/距离/用途，模糊时主动追问 | 提供真实需求 |
 | 商品推荐 | RAG 检索知识库，结构化筛选打分 | 最终决策 |
-| 优惠计算 | 拆解满减/PLUS券/以旧换新/国补叠加逻辑 | 以结算页为准 |
+| 优惠计算 | 拆解满减/会员券/以旧换新/国补叠加逻辑 | 以结算页为准 |
 | 售后问题 | 保修政策等标准问题直接回答 | 退货/投诉等高风险场景**强制转人工** |
 
 关键设计：售后 Agent 不做任何自主处理，退货、投诉、情绪激动一律转接人工客服。
@@ -112,7 +115,7 @@ flowchart TD
 | 7 | 量子点对比引用LG C4/索尼A80L | 幻觉 | 同上 | 同上 |
 | 18 | "我要退货"未转人工 | 合规 | 反问订单号，未直接转接 | 售后 Agent 强制转人工，不做自主处理 |
 | 20 | 回答末尾重复用户输入 | 格式 | "推荐个电视"重复出现 | 修正输出解析 |
-| 25 | "那下单吧"直接教下单步骤 | 越权 | 生成了下单步骤，有引导错误风险 | 引导用户到京东APP搜索，不生成下单流程 |
+| 25 | "那下单吧"直接教下单步骤 | 越权 | 生成了下单步骤，有引导错误风险 | 引导用户到电商平台搜索，不生成下单流程 |
 
 V1.1 剩余 2 个未满分 Case：国补和以旧换新的回答偏通用，未能结合具体型号给出更精准的估算，留待后续迭代。
 
@@ -130,6 +133,31 @@ V1.1 剩余 2 个未满分 Case：国补和以旧换新的回答偏通用，未�
 - **上下文压缩**：每个 Agent 只加载所需上下文，不全量塞入
 - **确定性优先**：意图分类、商品筛选、约束检查全部规则实现，0 Token 成本
 
+## 演示方式
+
+### 方式一：本地运行（推荐，零依赖）
+
+```bash
+git clone https://github.com/Alaraby527/tv-buying-copilot.git
+cd tv-buying-copilot
+python app.py
+```
+
+默认访问 http://localhost:8765。无 API Key 时自动降级为确定性模板模式，架构和执行轨迹完整可用。
+
+### 方式二：查看架构文档和评测报告
+
+- `AI_PRD.md` — AI 产品需求文档
+- `evaluation/eval-results-v1.0.md` — V1.0 评测结果
+- `evaluation/eval-results-v1.1.md` — V1.1 评测结果
+- `knowledge-base/` — 4 个知识库文档
+
+### 方式三：运行自动化评测
+
+```bash
+python eval.py
+```
+
 ## 技术栈
 
 - **语言**：Python 3.10+（零第三方依赖，仅标准库）
@@ -139,37 +167,22 @@ V1.1 剩余 2 个未满分 Case：国补和以旧换新的回答偏通用，未�
 
 ## 快速开始
 
-### 在线体验
-
-部署完成后补充链接。
-
-### 本地运行
-
 ```bash
-git clone https://github.com/Alaraby527/jingyan-ai-shopping-guide.git
-cd jingyan-ai-shopping-guide
+# 1. 克隆仓库
+git clone https://github.com/Alaraby527/tv-buying-copilot.git
+cd tv-buying-copilot
+
+# 2. 运行（无需安装依赖）
 python app.py
+
+# 3. 浏览器访问
+# http://localhost:8765
+
+# 4. 配置 LLM（可选）
+# set AI_API_KEY=your_api_key
+# set AI_BASE_URL=https://api.openai.com/v1
+# set AI_MODEL=gpt-4o-mini
 ```
-
-默认访问 http://localhost:8765 。
-
-### 配置 LLM（可选）
-
-```bash
-set AI_API_KEY=your_api_key
-set AI_BASE_URL=https://api.openai.com/v1
-set AI_MODEL=gpt-4o-mini
-```
-
-不设置时自动降级为确定性模板模式，架构和执行轨迹完整可用。
-
-### 运行评测
-
-```bash
-python eval.py
-```
-
-评测结果见 `evaluation/eval-results-v1.md`（V1.0）和 `evaluation/eval-results-v1.1.md`（V1.1）。
 
 ## 项目结构
 
