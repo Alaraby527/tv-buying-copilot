@@ -144,17 +144,7 @@ V1.1 剩余 2 个未满分 Case：国补和以旧换新的回答偏通用，未�
 
 预填充3轮示例对话（商品推荐→优惠查询→售后转人工）和完整的 Agent 执行轨迹，无需安装即可体验界面和架构。
 
-### 方式二：本地运行（完整功能，零依赖）
-
-```bash
-git clone https://github.com/Alaraby527/tv-buying-copilot.git
-cd tv-buying-copilot
-python app.py
-```
-
-默认访问 http://localhost:8765。无 API Key 时自动降级为确定性模板模式，架构和执行轨迹完整可用。
-
-### 方式三：查看架构文档和评测报告
+### 方式二：查看架构文档和评测报告
 
 - `AI_PRD.md` — AI 产品需求文档
 - `evaluation/eval-results-v1.0.md` — V1.0 评测结果
@@ -174,24 +164,9 @@ python eval.py
 - **LLM**：OpenAI-compatible API（可选，无 Key 时降级确定性模板）
 - **存储**：JSON 文件（知识库 + 长期记忆）
 
-## 快速开始
+## 在线访问
 
-```bash
-# 1. 克隆仓库
-git clone https://github.com/Alaraby527/tv-buying-copilot.git
-cd tv-buying-copilot
-
-# 2. 运行（无需安装依赖）
-python app.py
-
-# 3. 浏览器访问
-# http://localhost:8765
-
-# 4. 配置 LLM（可选）
-# set AI_API_KEY=your_api_key
-# set AI_BASE_URL=https://api.openai.com/v1
-# set AI_MODEL=gpt-4o-mini
-```
+请直接使用 README 顶部的 GitHub Pages 演示。仓库中的 `eval.py` 可用于评测脚本审阅，服务端源码仅作为实现材料保留。
 
 ## 项目结构
 
