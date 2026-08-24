@@ -4,7 +4,7 @@
 四层终止条件：完成 / 失败 / 中断 / 防重复
 
 零第三方依赖，仅 Python 标准库。
-启动：python app.py，访问 http://localhost:8765
+启动：python app.py；在线演示请使用 README 中的 GitHub Pages 地址
 """
 
 from __future__ import annotations
@@ -355,7 +355,7 @@ def main():
     Handler.orchestrator = AgentOrchestrator()
     server = ThreadingHTTPServer(("0.0.0.0", port), Handler)
     print(f"电视选购 Copilot Multi-Agent 导购系统已启动")
-    print(f"访问 http://localhost:{port}")
+    print(f"服务已启动，监听端口 {port}")
     print(f"LLM 可用：{Handler.orchestrator.llm.available}")
     try:
         server.serve_forever()
