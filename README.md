@@ -151,7 +151,7 @@ V1.1 剩余 2 个未满分 Case：国补和以旧换新的回答偏通用，未�
 - `evaluation/eval-results-v1.1.md` — V1.1 评测结果
 - `knowledge-base/` — 4 个知识库文档
 
-### 方式四：运行自动化评测
+### 方式三：运行自动化评测
 
 ```bash
 python eval.py
