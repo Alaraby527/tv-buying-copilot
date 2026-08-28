@@ -3,7 +3,8 @@
 ![Python](https://img.shields.io/badge/Python-3.10+-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
 ![Multi-Agent](https://img.shields.io/badge/Architecture-Multi--Agent-purple)
-![Zero Dependencies](https://img.shields.io/badge/Dependencies-Zero-orange)`n![MCP](https://img.shields.io/badge/MCP-Tool_Server-blue)
+![Zero Dependencies](https://img.shields.io/badge/Dependencies-Zero-orange)
+![MCP](https://img.shields.io/badge/MCP-Tool_Server-blue)
 ![Demo](https://img.shields.io/badge/Demo-Live-green)
 
 **👉 [在线体验静态演示](https://alaraby527.github.io/tv-buying-copilot/)**
@@ -167,7 +168,7 @@ flowchart TD
 
 **stdio 模式**（MCP 客户端配置）：
 
-`json
+```json
 {
   "mcpServers": {
     "tv-buying": {
@@ -177,14 +178,14 @@ flowchart TD
     }
   }
 }
-`
+```
 
 **命令行快速验证**：
 
-`ash
+```bash
 python mcp_server.py --list-tools
 python mcp_server.py --call search_products '{"budget": 5000, "distance": 2.5, "use_cases": ["游戏"]}'
-`
+```
 
 ### Skill + MCP + Memory 三位一体
 
