@@ -3,14 +3,14 @@
 ![Python](https://img.shields.io/badge/Python-3.10+-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
 ![Multi-Agent](https://img.shields.io/badge/Architecture-Multi--Agent-purple)
-![Zero Dependencies](https://img.shields.io/badge/Dependencies-Zero-orange)
+![Zero Dependencies](https://img.shields.io/badge/Dependencies-Zero-orange)`n![MCP](https://img.shields.io/badge/MCP-Tool_Server-blue)
 ![Demo](https://img.shields.io/badge/Demo-Live-green)
 
 **👉 [在线体验静态演示](https://alaraby527.github.io/tv-buying-copilot/)**
 
 > 从零自研 Python 代码的 Multi-Agent 电视导购系统，零第三方依赖，clone 即跑。
 >
-> Master Router + 5 Worker + Replanner + Compliance 四层架构，25 条评测驱动迭代，通过率 V1.0 72% → V1.1 92%，幻觉从 4 次降到 0 次。
+> Master Router + 5 Skill Worker + Replanner + Compliance 四层架构，内置 MCP 工具服务（商品检索/促销计算/履约查询/售后政策），短期会话槽位 + 长期用户记忆，25 条评测驱动迭代，通过率 V1.0 72% → V1.1 92%，幻觉从 4 次降到 0 次。
 
 ![智能电视选购 Copilot 演示界面](docs/demo-screenshot.png)
 
@@ -21,6 +21,7 @@
 - [用户场景](#用户场景)
 - [人机方案](#人机方案)
 - [架构设计](#架构设计)
+- [MCP 工具服务](#mcp-工具服务)
 - [评测与迭代](#评测与迭代)
 - [成本优化](#成本优化)
 - [演示方式](#演示方式)
@@ -95,12 +96,12 @@
 ```mermaid
 flowchart TD
     U[用户消息] --> NP[NeedParser<br/>需求解析：预算/尺寸/距离/用途/刷新率]
-    NP --> MR[Master Router<br/>确定性6类意图分类]
-    MR -->|product| PA[商品参数 Agent<br/>RAG检索 + 结构化筛选 + 加权打分]
-    MR -->|promotion| PR[比价优惠 Agent<br/>促销规则 + 叠加计算]
-    MR -->|fulfillment| FA[履约服务 Agent<br/>配送/安装/入户]
-    MR -->|aftersales| AA[售后客服 Agent<br/>强制转人工]
-    MR -->|clarify| CA[需求澄清 Agent<br/>多轮追问，每次一个问题]
+    NP --> MR[Master Router<br/>确定性6类意图分类 + 自主路由]
+    MR -->|product| PA[商品 Skill<br/>RAG检索 + 结构化筛选 + 加权打分]
+    MR -->|promotion| PR[优惠 Skill<br/>促销规则 + 叠加计算]
+    MR -->|fulfillment| FA[履约 Skill<br/>配送/安装/入户]
+    MR -->|aftersales| AA[售后 Skill<br/>强制转人工]
+    MR -->|clarify| CA[澄清 Skill<br/>多轮追问，每次一个问题]
     MR -->|fallback| FB[兜底回复]
     PA --> RP[Replanner<br/>硬约束二次检查：预算/刷新率/库存/越权]
     PR --> RP
@@ -110,6 +111,22 @@ flowchart TD
     FB --> OUT
     RP --> CP[Compliance<br/>合规审核 Reflection，5条红线，修正循环≤2次]
     CP --> OUT
+
+    MEM[Memory<br/>短期槽位 + 长期偏好] -.-> NP
+    MEM -.-> PA
+
+    subgraph MCP[MCP 工具服务 mcp_server.py]
+        T1[search_products]
+        T2[search_knowledge]
+        T3[get_promotions]
+        T4[get_fulfillment]
+        T5[get_aftersales]
+    end
+    PA -.-> T1
+    PA -.-> T2
+    PR -.-> T3
+    FA -.-> T4
+    AA -.-> T5
 ```
 
 ### 四层终止条件
@@ -126,12 +143,57 @@ flowchart TD
 | 模块 | 文件 | 说明 |
 |---|---|---|
 | LLM 客户端 | `core/llm_client.py` | 3次指数退避重试，模型分级（强/弱模型） |
-| 记忆系统 | `core/memory.py` | 短期记忆（会话槽位）+ 长期记忆（用户授权后本地存储） |
+| 记忆系统 | `core/memory.py` | 短期 Memory（会话槽位）+ 长期 Memory（用户授权后本地存储） |
 | 需求解析 | `core/parser.py` | 支持中文数字/3k缩写/2米5口语/否定句/4K8K排除 |
-| RAG 检索 | `core/rag.py` | 自研 token overlap 检索 + 结构化商品筛选打分 |
+| Skill：商品检索 | `core/rag.py` | 自研 token overlap RAG 检索 + 结构化商品筛选打分，通过 MCP 暴露为工具 |
 | 约束检查 | `core/replanner.py` | 预算/刷新率/库存/越权检查，无候选拒绝编造 |
 | 合规审核 | `agents/compliance.py` | 5条红线 + 修正循环 |
 
+## MCP 工具服务
+
+项目内置零依赖 MCP（Model Context Protocol）工具服务，将知识库检索和商品筛选能力以标准协议暴露，可被任意 MCP 兼容客户端（Claude Desktop、Cline、Dify 等）直接接入。
+
+### 工具列表
+
+| 工具 | 功能 | 对应 Skill |
+|------|------|-----------|
+| search_products | 按预算/尺寸/距离/用途结构化筛选商品，加权打分排序 | 商品参数 Agent |
+| search_knowledge | RAG 文档检索（token overlap 评分，Top-3） | 商品参数 Agent |
+| get_promotions | 促销规则检索（满减/会员券/以旧换新/国补） | 比价优惠 Agent |
+| get_fulfillment | 配送/安装/入户服务查询 | 履约服务 Agent |
+| get_aftersales | 售后政策查询，高风险场景返回强制转人工标记 | 售后客服 Agent |
+
+### 接入方式
+
+**stdio 模式**（MCP 客户端配置）：
+
+`json
+{
+  "mcpServers": {
+    "tv-buying": {
+      "command": "python",
+      "args": ["mcp_server.py"],
+      "cwd": "/path/to/tv-buying-copilot"
+    }
+  }
+}
+`
+
+**命令行快速验证**：
+
+`ash
+python mcp_server.py --list-tools
+python mcp_server.py --call search_products '{"budget": 5000, "distance": 2.5, "use_cases": ["游戏"]}'
+`
+
+### Skill + MCP + Memory 三位一体
+
+| 能力 | 实现 |
+|------|------|
+| **Skill** | 5 个 Worker Agent 各自封装独立能力模块（商品检索/优惠计算/履约查询/售后处理/需求澄清），通过 Master Router 动态调度 |
+| **MCP** | mcp_server.py 将知识库和工具以标准 MCP 协议暴露，支持外部客户端接入，工具实现与 Agent 共用同一套 core/rag.py 检索逻辑 |
+| **短期 Memory** | core/memory.py 会话槽位，记录当前对话的预算/尺寸/用途等上下文 |
+| **长期 Memory** | 用户授权后本地 JSON 存储偏好（品牌倾向、历史预算），跨会话复用 |
 ## 评测与迭代
 
 ### 评测集
@@ -201,6 +263,7 @@ python eval.py
 - **语言**：Python 3.10+（零第三方依赖，仅标准库）
 - **前端**：原生 HTML/CSS/JS（单文件）
 - **LLM**：OpenAI-compatible API（可选，无 Key 时降级确定性模板）
+- **MCP**：内置 stdio MCP 服务器，暴露 5 个工具，零额外依赖
 - **存储**：JSON 文件（知识库 + 长期记忆）
 
 ## 在线访问
@@ -211,6 +274,7 @@ python eval.py
 
 ```
 ├── app.py                  # 编排引擎 + HTTP服务
+├── mcp_server.py           # MCP 工具服务（JSON-RPC over stdio，零依赖）
 ├── eval.py                 # 自动化评测脚本
 ├── AI_PRD.md               # AI产品需求文档
 ├── docs/
