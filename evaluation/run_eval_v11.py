@@ -2,7 +2,7 @@ import json
 import urllib.request
 import time
 
-API_KEY = "app-mv4y4iNpkUOsR7F67G3WmzR8"
+API_KEY = ""
 BASE_URL = "https://api.dify.ai/v1"
 
 test_cases = [
