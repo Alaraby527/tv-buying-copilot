@@ -7,17 +7,27 @@
 ![MCP](https://img.shields.io/badge/MCP-Tool_Server-blue)
 ![Demo](https://img.shields.io/badge/Demo-Live-green)
 
+> **项目状态：实习后独立重做 / 独立原型**  
+> **我的角色：** 基于实习期间形成的导购业务认知，独立完成产品设计、Agent 编排、MCP 工具、评测与代码实现。  
+> **数据范围：** 知识库为静态样例，评测使用 25 条模拟测试用例；文中指标均来自这组样例。
+
 **👉 [在线体验静态演示](https://alaraby527.github.io/tv-buying-copilot/)**
 
 > 从零自研 Python 代码的 Multi-Agent 电视导购系统，零第三方依赖，clone 即跑。
 >
 > 架构：Master Router + 5 Skill Worker + Replanner + Compliance 四层，内置 MCP 工具服务（商品检索/促销计算/履约查询/售后政策），短期会话槽位 + 长期用户记忆。
 >
-> 评测：25 条评测集驱动的一轮迭代，通过率 V1.0 72% → V1.1 92%，编造知识库外型号的幻觉从 4 次降到 0 次。
+> 评测：25 条模拟评测集驱动的一轮迭代，通过率 V1.0 72%（18/25）→ V1.1 92%（23/25），编造知识库外型号的幻觉从 4 次降到 0 次。
 
 ![智能电视选购 Copilot 演示界面](docs/demo-screenshot.png)
 
 ## 目录
+
+### 90 秒先看这三件事
+
+1. **业务复杂度：** [AI_PRD.md](AI_PRD.md) 中的需求理解→多品对比→优惠计算→履约确认链路，以及人工兜底边界。
+2. **关键产品决策：** Router、Replanner、Compliance 如何分工，为什么高风险售后强制转人工。
+3. **失败与修复：** [V1.0 评测报告](evaluation/eval-results-v1.md) → [V1.1 评测报告](evaluation/eval-results-v1.1.md)，通过率 72%（18/25）→92%（23/25）。
 
 - [业务背景](#业务背景)
 - [问题来源与用户调研](#问题来源与用户调研)
@@ -254,7 +264,7 @@ V1.1 剩余 2 个未满分 Case：国补和以旧换新的回答偏通用，未�
 ### 方式二：查看架构文档和评测报告
 
 - `AI_PRD.md` — AI 产品需求文档
-- `evaluation/eval-results-v1.0.md` — V1.0 评测结果
+- `evaluation/eval-results-v1.md` — V1.0 评测结果
 - `evaluation/eval-results-v1.1.md` — V1.1 评测结果
 - `knowledge-base/` — 4 个知识库文档
 
